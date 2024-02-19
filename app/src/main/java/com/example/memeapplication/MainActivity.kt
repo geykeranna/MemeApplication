@@ -1,12 +1,12 @@
 package com.example.memeapplication
 
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -24,9 +24,6 @@ import com.example.memeapplication.utils.RetrofitInstance
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.HttpException
-import retrofit2.Retrofit
-import java.io.IOException
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,19 +40,15 @@ class MainActivity : ComponentActivity() {
                     scope.launch(Dispatchers.IO) {
                         val response = try {
                             RetrofitInstance.api.getMemesList()
-                        } catch (e: IOException) {
-                            Toast.makeText(
-                                this@MainActivity,
-                                "APP ERROR: ${e.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            return@launch
-                        } catch (e: HttpException){
-                            Toast.makeText(
-                                this@MainActivity,
-                                "HTTP ERROR: ${e.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        } catch (e: Exception) {
+                            Log.e("Exception", e.message.toString())
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "http error: ${e.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                             return@launch
                         }
 
